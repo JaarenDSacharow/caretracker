@@ -13,10 +13,12 @@ At present, the application demonstrates these concepts in Vue.js:
 
 
 All data is currently hardcoded.
+All code is currently on one single html file.  It has not presently been modularized.
 
 TODO:
 
 - Enhance the UI and models to allow for a patient to have multiple caregivers and vice versa.
 - Enhance the underlying data model to allow for a peristent data store
 - Enhance the UI with proper CSS
+- Modularize the code to be optimized for use with webpack
 - Implement a push notification and scheduling system to notify caregivers when a task is due and when a new task is entered and assigned.

@@ -1,0 +1,624 @@
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js" type="text/javascript"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.2.1/vue-router.js" type="text/javascript"></script>
+  </head>
+  <body>
+  <div class="container">
+    <div id="app">
+	<!-- router outlet vv -->
+	  <router-view></router-view>
+	</div>
+
+	<template id="home">
+	  <div id="home">
+	    Welcome to CareTracker.
+		<router-link  v-bind:to="{path: '/patients'}"><button>View Patients</button></router-link>
+		<router-link  v-bind:to="{path: '/caregivers'}"><button>View Care Givers</button></router-link>
+	  </div>
+	</template>
+	<!-- patient templates -->
+	<template id="patients">
+	  <div id="patientList">
+	  <p><router-link v-bind:to="{path: '/'}">Home</router-link> <router-link v-bind:to="{path: '/caregivers'}">Care Givers</router-link></p>
+	  Welcome to the patients page.  Click a name to view patient info.  You may also add a new patient or edit existing patients.
+	  <p><router-link v-bind:to="{path: '/addPatient'}"><button>Add a new patient</button></router-link></p>
+      <div v-for="patient in patientList">
+            <table>
+				<tr>
+				  <td>
+					<router-link v-bind:to="{name: 'patientInfo', params: {patient_id : patient.patient_id}}">{{ patient.firstname }} {{ patient.lastname }}</router-link>
+				  </td>
+				  <td>
+					<router-link v-bind:to="{name: 'editPatientInfo', params: {patient_id : patient.patient_id}}">Edit</router-link>
+				  </td>
+				  <td>
+					<router-link v-bind:to="{name: 'deletePatient', params: {patient_id : patient.patient_id}}">Delete</router-link>
+				  </td>
+				</tr>
+			</table>
+	  </div>
+	 </div>
+	</template>
+	
+	<template id="patientInfo">
+	  <div id="patientInfo">
+	    <router-link  v-bind:to="{path: '/patients'}">Return to Patient List</router-link>
+	    <h2> {{ patient.firstname }} {{ patient.lastname }} </h2> 
+		<router-link v-bind:to="{name: 'editPatientInfo', params: {patient_id : patient.patient_id}}">Edit {{ patient.firstname }} {{ patient.lastname }} </router-link>
+		<table>
+		  <tr><td>Address:</td><td>{{ patient.address1 }}</td></tr>
+		  <tr><td>Address 2:</td><td>{{ patient.address2 }}</td></tr>
+		  <tr><td>City:</td><td>{{ patient.city }}</td></tr>
+		  <tr><td>State:</td><td>{{ patient.state }}</td></tr>
+		  <tr><td>Zip:</td><td>{{ patient.zip }}</td></tr>
+		</table>
+		<h4> {{ patient.firstname }} currently has need of: </h4>
+		<ul v-for="need in patient.needs">
+			<li>{{ need }}</li>
+		</ul>
+	  </div>
+	</template>
+	
+	<template id="editPatientInfo">
+	  <div class="edit">
+	    <h4> Editing info for {{ patient.firstname }} {{ patient.lastname }} </h4>
+		
+		<form v-on:submit="updatePatientInfo">
+		  <div class="formElement">
+		    <label for="edit-name">First Name</label>
+		    <input class="form-control" id="edit-firstname" v-model="patient.firstname" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-lastname">Last Name</label>
+		    <input class="form-control" id="edit-lastname" v-model="patient.lastname" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-address1">Address1</label>
+		    <input class="form-control" id="edit-address1" v-model="patient.address1" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-address2">Address2</label>
+		    <input class="form-control" id="edit-address2" v-model="patient.address2" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-city">City</label>
+		    <input class="form-control" id="edit-city" v-model="patient.city" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-state">State</label>
+		    <input class="form-control" id="edit-state" v-model="patient.state" required/>
+		  </div>
+
+		  <button type="submit">Save</button> <button v-bind-to="'/patients'">Cancel</button>
+		</form>
+		<div v-for="(need, index) in patient.needs">
+		  <input class="form-control" id="edit-state" v-model="need" required/> <button v-on:click="deleteNeed(index)">X</button>
+		</div>
+		<input class="form-control" v-model="patient.new_need" placeholder="Enter a new need for this patient..." />
+		<button v-on:click="addNeed()">Add Need for this patient</button>
+	  </div>
+	</template>
+	
+	<template id="addPatient">
+      <div>	
+      <h4> Add New Patient </h4>	  
+	    <form v-on:submit="createPatient">
+		  <div class="formElement">
+		    <label for="edit-name">First Name</label>
+		    <input class="form-control" id="edit-firstname" v-model="patient.firstname" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-lastname">Last Name</label>
+		    <input class="form-control" id="edit-lastname" v-model="patient.lastname" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-address1">Address1</label>
+		    <input class="form-control" id="edit-address1" v-model="patient.address1" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-address2">Address2</label>
+		    <input class="form-control" id="edit-address2" v-model="patient.address2" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-city">City</label>
+		    <input class="form-control" id="edit-city" v-model="patient.city" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-state">State</label>
+		    <input class="form-control" id="edit-state" v-model="patient.state" required/>
+		  </div>
+		  <button type="submit">Add New Patient</button> <router-link v-bind:to="'/patients'"><button>Cancel</button></router-link>
+	    </form>
+	  </div>
+	</template>
+	
+	<template id="deletePatient">
+	  <div>
+	    <h2> Delete patient {{ patient.firstname }} {{ patient.lastname }}  </h2>
+		<p><h3> Are you sure?  This isn't reversable.</h3></p>
+		<form v-on:submit="patientDelete">
+		  <button type="submit">Delete Patient</button> <router-link v-bind:to="'/patients'"><button>Cancel</button></router-link>
+		</form>
+	  </div>
+	</template>
+	
+	<!-- end patient templates -->
+	
+	<!-- caregiver templates -->
+	<template id="caregivers">
+	  <div id="careGiverList">
+	  <p><router-link v-bind:to="{path: '/'}">Home</router-link> <router-link v-bind:to="{path: '/patients'}">Patients</router-link></p>
+	  Welcome to the care givers page.  Click a name to view care giver info.  You may also add a new care giver or edit existing care givers.
+	  <p><router-link v-bind:to="{path: '/addCareGiver'}"><button>Add a new Care Giver</button></router-link></p>
+      <div v-for="caregiver in careGiverList">
+            <table>
+				<tr>
+				  <td>
+					<router-link v-bind:to="{name: 'careGiverInfo', params: {caregiver_id : caregiver.caregiver_id}}">{{ caregiver.firstname }} {{ caregiver.lastname }}</router-link>
+				  </td>
+				  <td>
+					<router-link v-bind:to="{name: 'editCareGiverInfo', params: {caregiver_id : caregiver.caregiver_id}}">Edit</router-link>
+				  </td>
+				  <td>
+					<router-link v-bind:to="{name: 'deleteCareGiver', params: {caregiver_id : caregiver.caregiver_id}}">Delete</router-link>
+				  </td>
+				</tr>
+			</table>
+	  </div>
+	 </div>
+	</template>
+	
+	<template id="careGiverInfo">
+	  <div id="careGiverInfo">
+	    <router-link  v-bind:to="{path: '/caregivers'}">Return to Care Giver List</router-link>
+	    <h2> {{ caregiver.firstname }} {{ caregiver.lastname }} </h2> 
+		<router-link v-bind:to="{name: 'editCareGiverInfo', params: {caregiver_id : caregiver.caregiver_id}}">Edit {{ caregiver.firstname }} {{ caregiver.lastname }} </router-link>
+		<table>
+		  <tr><td>Patient:</td><td>{{ caregiver.patient_firstname }}  {{ caregiver.patient_lastname }}</td></tr>
+		</table>
+		<h4> {{ caregiver.firstname }} is currently taking care of: </h4>
+		<ul v-for="task in caregiver.tasks">
+			<li>{{ task }}</li>
+		</ul>
+	  </div>
+	</template>
+	
+	<template id="editCareGiverInfo">
+	  <div class="edit">
+	    <router-link  v-bind:to="{path: '/caregivers'}">Return to Care Giver List</router-link>
+	    <h4> Editing info for {{ caregiver.firstname }} {{ caregiver.lastname }} </h4>
+		<form v-on:submit="updateCareGiverInfo">
+		  <div class="formElement">
+		    <label for="edit-name">First Name</label>
+		    <input class="form-control" id="edit-firstname" v-model="caregiver.firstname" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-lastname">Last Name</label>
+		    <input class="form-control" id="edit-lastname" v-model="caregiver.lastname" required/>
+		  </div>
+		  <button type="submit">Save</button> <button v-bind-to="'/caregivers'">Cancel</button>
+		</form>
+		<div v-for="(task, index) in caregiver.tasks">
+		  <input class="form-control" id="edit-state" v-model="task" required/> <button v-on:click="deleteTask(index)">X</button>
+		</div>
+		<div>
+		  
+		</div>
+	  </div>
+	</template>
+	
+	
+	<template id="addCareGiver">
+      <div>	
+      <h4> Add New Patient </h4>	  
+	    <form v-on:submit="createCareGiver">
+		  <div class="formElement">
+		    <label for="edit-name">First Name</label>
+		    <input class="form-control" id="edit-firstname" v-model="caregiver.firstname" required/>
+		  </div>
+		  <div class="formElement">
+		    <label for="edit-lastname">Last Name</label>
+		    <input class="form-control" id="edit-lastname" v-model="caregiver.lastname" required/>
+		  </div>
+		  <button type="submit">Add New Caregiver</button> <router-link v-bind:to="'/caregivers'"><button>Cancel</button></router-link>
+	    </form>
+	  </div>
+	</template>
+	
+	<template id="deleteCareGiver">
+	  <div>
+	    <h2> Delete Care Giver {{ caregiver.firstname }} {{ caregiver.lastname }}  </h2>
+		<p><h3> Are you sure?  This isn't reversable.</h3></p>
+		<form v-on:submit="caregiverDelete">
+		  <button type="submit">Delete Care Giver</button> <router-link v-bind:to="'/patients'"><button>Cancel</button></router-link>
+		</form>
+	  </div>
+	</template>
+	
+  </div>
+
+  </body>
+  
+
+<script>
+
+  //patient and caregiver definitions
+  class Patient {
+  
+    constructor (patient_id, firstname, lastname, address1, address2, city, state, zip, needs){
+	  this.patient_id = patient_id;
+	  this.firstname = firstname;
+	  this.lastname = lastname;
+	  this.address1 = address1;
+	  this. address2 = address2;
+	  this.city = city;
+	  this.state = state;
+	  this.zip = zip;
+	  this.needs = needs;
+	  this.new_need = '';
+	}
+  
+  }
+  
+  class CareGiver {
+    constructor(caregiver_id, firstname, lastname, patient_id, patient_firstname, patient_lastname, tasks){
+	  
+	  this.caregiver_id = caregiver_id;
+	  this.firstname = firstname;
+	  this.lastname = lastname;
+	  this.patient_id = patient_id;
+	  this.patient_firstname = patient_firstname;
+	  this.patient_lastname = patient_lastname;
+	  this.tasks = tasks;
+	  this.new_task = '';
+	
+	}
+  
+  }
+  
+ var patientList = [
+    new Patient (
+	  '198989',
+	  'Judith',
+	  'Smith',
+	  '1313 Mockingbird Lane',
+	  'N/A',
+	  'Kalamazoo',
+	  'MI',
+	  '33245',
+	    [
+		  'Food Deliveries',
+		  'comfort items',
+		  'travel to appts',
+		  'overnight help',
+		  'advocate with doctors'
+		]
+		),
+	new Patient (
+	  '289898989',
+	  'Ginni',
+	  'Allender',
+	  '1234 Sesame street',
+	  'APT 2',
+	  'New York',
+	  'NY',
+	  '77839',
+	    [
+		  'Food Deliveries',
+		  'comfort items',
+		  'travel to appts',
+		  'Overnight help',
+		  'Bed Turning',
+		  'advocate with doctors'
+		]
+	)
+]; 
+
+
+  var careGiverList = [
+    new CareGiver (
+	  '14',
+	  'Molly',
+	  'Beans',
+	  '198989',
+	  'Judith',
+	  'Smith',
+	   [
+	     'Food Deliveries',
+		 'overnight help'
+	   ]
+	  ),
+	new CareGiver (
+	  '15',
+	  'Chuck',
+	  'Harris',
+	  '289898989',
+	  'Giini',
+	  'Allender',
+	   [
+	     'Food Deliveries',
+		 'overnight help'
+	   ]
+	  ),
+	  
+	
+   ];
+
+
+//methods used in more than one component for searching/editing/deleting
+
+function findPatientID (patient_id) {
+//loop through the dataset and find the match, return the element
+ for (var key =0;key < patientList.length; key++) {
+   if(patientList[key].patient_id == patient_id ) {
+     return key;
+   }
+ }
+}
+
+function findPatient(patient_id){
+  //return the element that matches from the output of the above function
+  return patientList[findPatientID(patient_id)];
+}
+
+
+function findCareGiverID (caregiver_id) {
+//loop through the dataset and find the match, return the element
+ for (var key =0;key < careGiverList.length; key++) {
+   if(careGiverList[key].caregiver_id == caregiver_id ) {
+     return key;
+   }
+ }
+}
+
+function findCareGiver(caregiver_id){
+  //return the element that matches from the output of the above function
+  return careGiverList[findCareGiverID(caregiver_id)];
+}
+
+
+   
+/*
+* components
+* bind to templates, return data
+*/
+
+  const Home = Vue.extend({
+    template: '#home'
+  });
+ 
+/*
+* patient components
+* bind to templates, return data for patient sections
+*/
+ 
+  //patient list
+  const Patients = Vue.extend({
+    template: '#patients',
+	data: function(){
+	  return {patientList: patientList, searchKey: ''}
+	}
+  });
+  //single patient
+  const PatientInfo = Vue.extend({
+    template: '#patientInfo',
+	data: function (){
+	  return{patient: findPatient(this.$route.params.patient_id )};
+	}
+  });
+  
+  //edit a patient
+  const editPatientInfo = Vue.extend({
+    template: '#editPatientInfo',
+    data: function (){
+	  return{patient: findPatient(this.$route.params.patient_id )};
+	},
+	methods: {
+	  addNeed : function (){
+	     console.log(this.patient.new_need);
+		 if(this.patient.new_need !==""){
+		     this.patient.needs.push(this.patient.new_need.trim());
+		 }
+		 this.patient.new_need ="";
+	  },
+	  deleteNeed: function (index){
+	     this.patient.needs.splice(index, 1);
+	  },
+	  updatePatientInfo : function (){
+	    let patient = this.patient;
+		console.log(patient.needs);
+		patientList[findPatientID(patient.patient_id)] = {
+		  patient_id: patient.patient_id,
+		  firstname : patient.firstname,
+		  lastname : patient.lastname,
+		  address1 : patient.address1,
+		  address2 : patient.address2,
+		  city : patient.city,
+		  state : patient.state,
+		  needs : patient.needs
+		};
+		router.push("/patients");
+	  }
+	}
+
+  });
+  
+  //add a patient
+  const addPatient = Vue.extend({
+    template: '#addPatient',
+	data: function(){
+	  return {patient: {
+	  	  patient_id: '',
+		  firstname: '',
+		  lastname: '',
+		  address1: '',
+		  address2: '',
+		  city : '',
+		  state :'',
+		  needs : '',
+		  new_need: ''
+	  
+	  }};
+	},
+	methods: {
+	  createPatient : function(){
+	    var patient = this.patient;
+	    patientList.push({
+	  	  patient_id: Math.random().toString().split('.')[1],
+		  firstname : patient.firstname,
+		  lastname : patient.lastname,
+		  address1 : patient.address1,
+		  address2 : patient.address2,
+		  city : patient.city,
+		  state : patient.state,
+		  needs: []
+		
+		});
+		
+		router.push('/patients');
+	  }
+	}
+  });
+  
+  //remove a patient
+  const deletePatient = Vue.extend({
+		template: '#deletePatient',
+		data : function(){
+		  return{patient: findPatient(this.$route.params.patient_id)};
+		},
+		methods :{
+		  patientDelete: function(){
+		    patientList.splice(findPatientID(this.$route.params.patient_id), 1);
+			router.push('/patients');
+		  }
+		 
+		}
+  
+  
+  });
+  
+/*
+* caregiver components
+* bind to templates, return data for caregiver sections
+*/
+
+  //remove a care giver
+  const deleteCareGiver = Vue.extend({
+		template: '#deleteCareGiver',
+		data : function(){
+		  return{caregiver: findCareGiver(this.$route.params.caregiver_id)};
+		},
+		methods :{
+		  caregiverDelete: function(){
+		    careGiverList.splice(findPatientID(this.$route.params.caregiver_id), 1);
+			router.push('/caregivers');
+		  }
+		}
+  });
+  
+
+  //edit a caregiver
+  const editCareGiverInfo = Vue.extend({
+    template: '#editCareGiverInfo',
+    data: function (){
+	  return{caregiver: findCareGiver(this.$route.params.caregiver_id )};
+	  return{patients: patientList};
+	},
+	methods: {
+	  updateCareGiverInfo : function (){
+	    let caregiver = this.caregiver;
+		console.log(caregiver);
+		careGiverList[findCareGiverID(caregiver.caregiver_id)] = {
+		  id: caregiver.caregiver_id,
+		  firstname : caregiver.firstname,
+		  lastname : caregiver.lastname,
+		  patient_firstname : caregiver.patient_firstname,
+		  patient_lastname : caregiver.patient_lastname
+		};
+		router.push("/caregivers");
+	  },
+	  deleteTask: function (index){
+	     this.caregiver.tasks.splice(index, 1);
+	  }
+	}
+
+  });
+  
+  //add a care giver
+   const addCareGiver = Vue.extend({
+     template : '#addCareGiver',
+	 data : function (){
+	    return {caregiver: {
+	  	  caregiver_id: '',
+		  firstname: '',
+		  lastname: '',
+		  patient_id: '',
+		  patient_firstname : '',
+		  patient_lastname : '',
+		  tasks : '',
+		  new_task: ''
+	  
+	   }};
+	 },
+	 methods : {
+	   createCareGiver : function (){
+	     var caregiver = this.caregiver;
+	      careGiverList.push({
+		    caregiver_id: Math.random().toString().split('.')[1],
+		    firstname : caregiver.firstname,
+		    lastname : caregiver.lastname,
+		    tasks : []
+		  });
+		  router.push('/caregivers');
+	    }
+	 }
+	 
+  });
+   
+
+  //single care giver
+  const careGiverInfo = Vue.extend({
+    template: '#careGiverInfo',
+	data: function (){
+	  return{caregiver: findCareGiver(this.$route.params.caregiver_id )};
+	}
+  });
+ 
+ //care giver list
+  const Caregivers = Vue.extend({
+    template: '#caregivers',
+	data: function(){
+	  return {careGiverList: careGiverList, searchKey: ''}
+	}
+  });
+  
+  //end components
+
+  //route definitions
+  const router =  new VueRouter({
+    routes: [
+	  {path: '/', component: Home},
+	  {path: '/patients', component: Patients},
+	  {path: '/patientInfo', component: PatientInfo, name: 'patientInfo'},
+	  {path: '/editPatientInfo', component: editPatientInfo, name: 'editPatientInfo'},
+	  {path: '/deletePatient', component: deletePatient, name: 'deletePatient'},
+	  {path: '/addPatient', component: addPatient},
+	  {path: '/caregivers', component: Caregivers},
+	  {path: '/careGiverInfo', component: careGiverInfo, name: 'careGiverInfo'},
+	  {path: '/editCareGiverInfo', component: editCareGiverInfo, name: 'editCareGiverInfo'},
+	  {path: '/addCareGiver', component: addCareGiver},
+	  {path: '/deleteCareGiver', component: deleteCareGiver, name: 'deleteCareGiver'}
+	]
+  });
+  
+  //main vue object
+  const vm = new Vue({
+    router:router
+  }).$mount('#app');
+   
+  
+  
+</script>
+
+</html>

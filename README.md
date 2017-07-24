@@ -1,6 +1,6 @@
 # caretracker
 
-This is a scaffold for an application written for two purposes: to demonstrate concepts in Vue.js and to allow the cooridnation of care for infirm adults by care givers.
+This is a scaffold for an application written for two purposes: to demonstrate concepts in Vue.js and to allow the coordination of care for infirm adults by care givers.
 
 The application is intended to allow a user to create/manage patients and care givers and the associated care needs and tasks.
 

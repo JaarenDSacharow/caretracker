@@ -8,7 +8,7 @@ At present, the application demonstrates these concepts in Vue.js:
 
 - Routing using the vue-router library.  http://router.vuejs.org/
 - Components using Vue.extend
-- Templates, using declaritive directives as well as templating syntax.
+- Templates, using declarative directives as well as templating syntax.
 - CRUD operations on both Patient and Caregiver entities, and the nested list of patient needs and care giver tasks.  All logic is at the component level.
 
 

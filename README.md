@@ -16,7 +16,7 @@ All data is currently hardcoded.
 
 TODO:
 
-1. Enhance the UI and models to allow for a patient to have multiple caregivers and vice versa.
-2. Enhance the underlying data model to allow for a peristent data store
-3. Enhance the UI with proper CSS
-4. Implement a push notification and scheduling system to notify caregivers when a task is due and when a new task is entered and assigned.
+- Enhance the UI and models to allow for a patient to have multiple caregivers and vice versa.
+- Enhance the underlying data model to allow for a peristent data store
+- Enhance the UI with proper CSS
+- Implement a push notification and scheduling system to notify caregivers when a task is due and when a new task is entered and assigned.
